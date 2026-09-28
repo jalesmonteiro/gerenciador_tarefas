@@ -6,37 +6,37 @@ from modelos.etiqueta import Etiqueta
 class Tarefa(EntidadeBase):
     def __init__(
         self,
-        titulo: str,
-        descricao: str = "",
-        concluida: bool = False,
-        projeto_id: int | None = None,
-        id_registro: int | None = None,
+        titulo,
+        descricao = "",
+        concluida = False,
+        projeto_id = None,
+        id_registro = None,
         *args,
         **kwargs,
-    ) -> None:
+    ):
         super().__init__(id_registro=id_registro, *args, **kwargs)
-        self._titulo: str = ""
+        self._titulo = ""
         self.titulo = titulo  # aciona setter
-        self.descricao: str = descricao
-        self.concluida: bool = concluida
-        self.projeto_id: int | None = projeto_id
-        self.etiquetas: list[Etiqueta] = []  # agregacao
+        self.descricao = descricao
+        self.concluida = concluida
+        self.projeto_id = projeto_id
+        self.etiquetas = []  # agregacao
 
     @property
-    def titulo(self) -> str:
+    def titulo(self):
         return self._titulo
 
     @titulo.setter
-    def titulo(self, valor: str) -> None:
+    def titulo(self, valor):
         if not valor or not valor.strip():
             raise ValueError("o titulo da tarefa nao pode ser vazio.")
         self._titulo = valor.strip()
 
-    def adicionar_etiqueta(self, etiqueta: Etiqueta) -> None:
+    def adicionar_etiqueta(self, etiqueta):
         if etiqueta not in self.etiquetas:
             self.etiquetas.append(etiqueta)
 
-    def salvar(self) -> None:
+    def salvar(self):
         if not self.projeto_id:
             raise ValueError("a tarefa precisa estar vinculada a um projeto valido.")
 
@@ -60,7 +60,7 @@ class Tarefa(EntidadeBase):
                 )
 
     @classmethod
-    def buscar_pendentes_por_projeto(cls, projeto_id: int) -> list["Tarefa"]:
+    def buscar_pendentes_por_projeto(cls, projeto_id):
         sql = "SELECT id, titulo, descricao, concluida, projeto_id FROM tarefas WHERE projeto_id = ? AND concluida = 0"
         tarefas = []
         with GerenciadorBanco.obter_conexao() as conexao:
@@ -80,11 +80,11 @@ class Tarefa(EntidadeBase):
 class TarefaUrgente(Tarefa):
     """Especialização que sobrescreve comportamento padrão."""
 
-    def __init__(self, titulo: str, prazo_horas: int = 24, *args, **kwargs) -> None:
+    def __init__(self, titulo, prazo_horas = 24, *args, **kwargs):
         super().__init__(titulo=f"[URGENTE] {titulo}", *args, **kwargs)
-        self.prazo_horas: int = prazo_horas
+        self.prazo_horas = prazo_horas
 
-    def salvar(self) -> None:
+    def salvar(self):
         super().salvar()
         etiqueta_urgente = Etiqueta(nome="urgente", cor="vermelho")
         etiqueta_urgente.salvar()

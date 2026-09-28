@@ -3,12 +3,12 @@ from banco.conexao import GerenciadorBanco
 from modelos.base import EntidadeBase
 
 class Etiqueta(EntidadeBase):
-    def __init__(self, nome: str, cor: str = "azul", id_registro: int | None = None, *args, **kwargs) -> None:
-        super().__init__(id_registro=id_registro, *args, **kwargs)
-        self.nome: str = nome.strip().lower()
-        self.cor: str = cor
+    def __init__(self, nome, cor="azul", id_registro=None):
+        super().__init__(id_registro=id_registro)
+        self.nome = nome.strip().lower()
+        self.cor = cor
 
-    def salvar(self) -> None:
+    def salvar(self):
         sql = "INSERT OR IGNORE INTO etiquetas (nome, cor) VALUES (?, ?)"
         with GerenciadorBanco.obter_conexao() as conexao:
             cursor = conexao.cursor()
@@ -20,7 +20,7 @@ class Etiqueta(EntidadeBase):
                 self.id = cursor.fetchone()["id"]
 
     @classmethod
-    def buscar_por_nome(cls, nome: str) -> "Etiqueta | None":
+    def buscar_por_nome(cls, nome):
         sql = "SELECT id, nome, cor FROM etiquetas WHERE nome = ?"
         with GerenciadorBanco.obter_conexao() as conexao:
             cursor = conexao.cursor()

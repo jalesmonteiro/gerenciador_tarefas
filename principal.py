@@ -4,7 +4,7 @@ from modelos.etiqueta import Etiqueta
 from modelos.projeto import Projeto
 from modelos.tarefa import Tarefa
 
-def executar() -> None:
+def executar():
     # 1. inicializacao
     GerenciadorBanco.inicializar_tabelas()
 

@@ -3,26 +3,26 @@ from modelos.base import EntidadeBase
 from modelos.tarefa import Tarefa, TarefaUrgente
 
 class Projeto(EntidadeBase):
-    def __init__(self, titulo: str, descricao: str = "", id_registro: int | None = None, *args, **kwargs) -> None:
-        super().__init__(id_registro=id_registro, *args, **kwargs)
-        self.titulo: str = titulo
-        self.descricao: str = descricao
-        self._tarefas: list[Tarefa] = []  # composicao: gerenciadas pelo projeto
+    def __init__(self, titulo, descricao = "", id_registro = None):
+        super().__init__(id_registro=id_registro)
+        self.titulo = titulo
+        self.descricao = descricao
+        self._tarefas = []  # composicao: gerenciadas pelo projeto
 
-    def criar_tarefa(self, titulo: str, descricao: str = "", urgente: bool = False, **kwargs) -> Tarefa:
+    def criar_tarefa(self, titulo, descricao = "", urgente = False):
         if self.id is None:
             raise ValueError("salve o projeto antes de associar tarefas a ele.")
 
         if urgente:
-            tarefa = TarefaUrgente(titulo=titulo, descricao=descricao, projeto_id=self.id, **kwargs)
+            tarefa = TarefaUrgente(titulo=titulo, descricao=descricao, projeto_id=self.id)
         else:
-            tarefa = Tarefa(titulo=titulo, descricao=descricao, projeto_id=self.id, **kwargs)
+            tarefa = Tarefa(titulo=titulo, descricao=descricao, projeto_id=self.id)
 
         tarefa.salvar()
         self._tarefas.append(tarefa)
         return tarefa
 
-    def salvar(self) -> None:
+    def salvar(self):
         with GerenciadorBanco.obter_conexao() as conexao:
             cursor = conexao.cursor()
             if self.id is None:
@@ -34,7 +34,7 @@ class Projeto(EntidadeBase):
                 cursor.execute(sql, (self.titulo, self.descricao, self.id))
 
     @classmethod
-    def carregar_com_tarefas(cls, id_projeto: int) -> "Projeto | None":
+    def carregar_com_tarefas(cls, id_projeto):
         with GerenciadorBanco.obter_conexao() as conexao:
             cursor = conexao.cursor()
             linha = cursor.execute("SELECT id, titulo, descricao FROM projetos WHERE id = ?", (id_projeto,)).fetchone()

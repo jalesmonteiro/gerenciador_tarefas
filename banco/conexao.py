@@ -1,14 +1,14 @@
 import sqlite3
 
 class GerenciadorBanco:
-    _caminho_banco: str = "sistema_tarefas.db"
+    _caminho_banco = "sistema_tarefas.db"
 
     @classmethod
-    def definir_caminho(cls, novo_caminho: str) -> None:
+    def definir_caminho(cls, novo_caminho):
         cls._caminho_banco = novo_caminho
 
     @classmethod
-    def obter_conexao(cls) -> sqlite3.Connection:
+    def obter_conexao(cls):
         conexao = sqlite3.connect(cls._caminho_banco)
         conexao.row_factory = sqlite3.Row
         # habilita restricoes de chaves estrangeiras no sqlite
@@ -16,7 +16,7 @@ class GerenciadorBanco:
         return conexao
 
     @staticmethod
-    def inicializar_tabelas() -> None:
+    def inicializar_tabelas():
         ddl = """
         CREATE TABLE IF NOT EXISTS projetos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
